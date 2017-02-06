@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 
 /**
  * Classe Générale à toutes les continuations du projet.
- * Elle définit essentiellement des fonctions de confort pour
+ * Elle définit essentiellement des fonctions de comfort pour
  * la lecture et l'écriture de types primitifs (int) avec un
  * Bytebuffer qq.
  * @author morat 
