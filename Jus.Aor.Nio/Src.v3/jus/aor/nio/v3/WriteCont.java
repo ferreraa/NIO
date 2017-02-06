@@ -19,6 +19,7 @@ public class WriteCont extends Continuation{
 	protected ArrayList<byte[]> msgs = new ArrayList<>() ;
 	// buf contains the byte array that is currently written
 	protected ByteBuffer buf = null;
+	protected ByteBuffer lbuf = null;
 
 
 	/**
@@ -32,10 +33,10 @@ public class WriteCont extends Continuation{
 
 
 	/**
-	 * @return true if the msgs are not completly write.
+	 * @return true if the msgs are not completely written.
 	 */
 	protected boolean isPendingMsg(){
-	// todo
+		return state!=State.WRITING_DONE;
 	}
 
 
@@ -44,7 +45,8 @@ public class WriteCont extends Continuation{
 	 * @throws IOException 
 	 */
 	protected void sendMsg(Message data) throws IOException{
-	// todo
+		msgs.add(data.marshall());
+		key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
 	}
 
 
@@ -52,6 +54,25 @@ public class WriteCont extends Continuation{
 	 * @throws IOException
 	 */
 	protected void handleWrite()throws IOException{
-	// todo
+		int remaining;
+		switch(state){
+		case WRITING_DONE: 
+			byte[] msg = msgs.remove(0);
+			buf = ByteBuffer.wrap(msg);
+			lbuf = Continuation.intToBytes(msg.length);
+		case WRITING_LENGTH:
+			remaining = socketChannel.write(lbuf);
+			if(remaining>0){
+				state = State.WRITING_LENGTH;
+				break;
+			}
+		case WRITING_DATA:
+			remaining = socketChannel.write(buf);
+			if(remaining>0){
+				state = State.WRITING_DONE;
+				if(msgs.size()==0)
+					key.interestOps(SelectionKey.OP_READ);
+			}
+		}		
 	}
 }
