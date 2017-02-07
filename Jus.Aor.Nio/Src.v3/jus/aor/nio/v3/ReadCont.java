@@ -62,7 +62,9 @@ public class ReadCont  extends Continuation{
 				state = State.READING_DATA;
 				buf = ByteBuffer.allocate(super.bytesToInt(buf_length));
 			}
-			break;
+			else
+				break; 
+			//On sort du switch uniquement si on n'a pas fini de lire la taille.
 		case READING_DATA:
 			//On est en train de lire le contenu du message
 			nbsteps++;
