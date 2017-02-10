@@ -47,6 +47,7 @@ public class WriteCont extends Continuation{
 	protected void sendMsg(Message data) throws IOException{
 		msgs.add(data.marshall());
 		key.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+		System.out.println(data.toString());
 	}
 
 
@@ -74,5 +75,6 @@ public class WriteCont extends Continuation{
 					key.interestOps(SelectionKey.OP_READ);
 			}
 		}		
+	
 	}
 }

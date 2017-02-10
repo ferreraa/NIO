@@ -47,7 +47,7 @@ public class ReadCont  extends Continuation{
 			//On lit un nouveau message
 			buf_length = ByteBuffer.allocate(LENGTHSIZE);
 			state = State.READING_LENGTH;
-			nbsteps = 0;
+			nbsteps = 1;
 					
 		case READING_LENGTH:
 			//On est en train de lire l'entête
@@ -63,11 +63,13 @@ public class ReadCont  extends Continuation{
 				buf = ByteBuffer.allocate(super.bytesToInt(buf_length));
 			}
 			else
+			{
+				nbsteps++;
 				break; 
-			//On sort du switch uniquement si on n'a pas fini de lire la taille.
+				//On sort du switch uniquement si on n'a pas fini de lire la taille.
+			}
 		case READING_DATA:
 			//On est en train de lire le contenu du message
-			nbsteps++;
 			if(socketChannel.read(buf) == -1)
 			{
 				socketChannel.close();
@@ -79,9 +81,12 @@ public class ReadCont  extends Continuation{
 				state = State.READING_DONE;
 				m = new Message(buf.array(),nbsteps);
 			}
+			else
+				nbsteps++;
+			
 			break;
 		}
-		
+		if(m!=null) System.out.println(m.toString());
 		return m;
 		//On retourne le message si il a été créé et donc null dans le cas contraire
 	}
