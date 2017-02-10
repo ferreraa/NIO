@@ -156,6 +156,7 @@ public class NioClient implements Runnable{
 			Message msg = readCont.handleRead();
 			if (msg != null){
 				log.log(Level.FINE,String.format("Full Message Received : %s",msg));
+				msg.incrementExchange();
 				send(msg);
 			}					
 		}catch (IOException e){
